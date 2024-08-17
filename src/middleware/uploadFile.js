@@ -2,6 +2,7 @@ import multer from "multer";
 export const customValidation = {
   images: ["image/png", "image/gif", "image/jpeg"],
 };
+
 const uploadFile = (validation, folderName) => {
   // if (!fs.existsSync(`./uploads/${folderName}`)) {
   //   fs.mkdirSync(`./uploads/${folderName}`);
@@ -21,7 +22,7 @@ const uploadFile = (validation, folderName) => {
       cb(new Error("invalid format"));
     }
   };
-  const upload = multer({ storage, fileFilter });
+  const upload = multer({ fileFilter });
   return upload;
 };
 
