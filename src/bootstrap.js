@@ -29,9 +29,7 @@ const bootstrap = (app, express) => {
     asyncHandler((req, res) => {
       const sig = request.headers["stripe-signature"].toString();
 
-      let event;
-
-      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+      let event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
       let checkout;
       // Handle the event
       if (event.type == "checkout.session.completed") {
