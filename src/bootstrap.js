@@ -21,24 +21,33 @@ const bootstrap = (app, express) => {
   dbConnection();
 
   // This is your Stripe CLI webhook secret for testing your endpoint locally.
-  const endpointSecret = "whsec_wVp9CH1h4KAdpZkE235oMpfnjKvhNoEp";
 
   app.post(
     "/webhook",
     express.raw({ type: "application/json" }),
-    asyncHandler((req, res) => {
-      const sig = request.headers["stripe-signature"].toString();
+    async (req, res) => {
+      const sig = req.headers["stripe-signature"];
 
-      let event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-      let checkout;
-      // Handle the event
-      if (event.type == "checkout.session.completed") {
-        checkout = event.data.object;
-      } else console.log(`Unhandled event type ${event.type}`);
+      const endpointSecret = "whsec_wVp9CH1h4KAdpZkE235oMpfnjKvhNoEp";
 
-      // Return a 200 response to acknowledge receipt of the event
-      res.status(200).json({ checkout });
-    })
+      let event;
+
+      try {
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      } catch (err) {
+        console.log(`Webhook Error: ${err.message}`);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+      }
+
+      if (event.type === "checkout.session.completed") {
+        const session = event.data.object;
+
+        // Handle the event (e.g., update your database)
+        console.log(`Checkout Session completed: ${session.id}`);
+      }
+
+      res.json({ received: true });
+    }
   );
 
   app.use(express.json());
