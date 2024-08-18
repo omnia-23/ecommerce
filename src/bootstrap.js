@@ -13,8 +13,11 @@ import addressRouter from "./modules/address/address.routes.js";
 import couponRouter from "./modules/coupon/coupon.routes.js";
 import cartRouter from "./modules/cart/cart.routes.js";
 import orderRouter from "./modules/order/order.routes.js";
-import asyncHandler from "./middleware/asyncHandler.js";
 
+import Strip from "stripe";
+const stripe = new Strip(
+  "sk_test_51PokU9AXaj6VSZsVYsubHy4RarfN6W5azi0mSSOgPXK1B2qPDE2Itx3ho7FtrVs3z60kyKqf0BQ9EjQcb2Nzw7MW00Z3btADVB"
+);
 dotenv.config();
 const bootstrap = (app, express) => {
   const baseUrl = "/api/v1";
