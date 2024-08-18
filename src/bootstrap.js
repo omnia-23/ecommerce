@@ -13,13 +13,38 @@ import addressRouter from "./modules/address/address.routes.js";
 import couponRouter from "./modules/coupon/coupon.routes.js";
 import cartRouter from "./modules/cart/cart.routes.js";
 import orderRouter from "./modules/order/order.routes.js";
+import asyncHandler from "./middleware/asyncHandler.js";
 
 dotenv.config();
 const bootstrap = (app, express) => {
   const baseUrl = "/api/v1";
   dbConnection();
 
+  // This is your Stripe CLI webhook secret for testing your endpoint locally.
+  const endpointSecret = "whsec_wVp9CH1h4KAdpZkE235oMpfnjKvhNoEp";
+
+  app.post(
+    "/webhook",
+    express.raw({ type: "application/json" }),
+    asyncHandler((req, res) => {
+      const sig = request.headers["stripe-signature"].toString();
+
+      let event;
+
+      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+      let checkout;
+      // Handle the event
+      if (event.type == "checkout.session.completed") {
+        checkout = event.data.object;
+      } else console.log(`Unhandled event type ${event.type}`);
+
+      // Return a 200 response to acknowledge receipt of the event
+      res.status(200).json({ checkout });
+    })
+  );
+
   app.use(express.json());
+
   app.use("/uploads", express.static("uploads"));
   app.use(`${baseUrl}/categories`, categoryRouter);
   app.use(`${baseUrl}/brands`, brandRouter);
