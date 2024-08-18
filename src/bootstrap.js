@@ -11,12 +11,14 @@ import reviewRouter from "./modules/review/review.routes.js";
 import wishlistRouter from "./modules/wishlist/wishlist.routes.js";
 import addressRouter from "./modules/address/address.routes.js";
 import couponRouter from "./modules/coupon/coupon.routes.js";
-import cartRouter from './modules/cart/cart.routes.js'
-import orderRouter from './modules/order/order.routes.js'
+import cartRouter from "./modules/cart/cart.routes.js";
+import orderRouter from "./modules/order/order.routes.js";
+
+dotenv.config();
 const bootstrap = (app, express) => {
   const baseUrl = "/api/v1";
   dbConnection();
-  dotenv.config();
+
   app.use(express.json());
   app.use("/uploads", express.static("uploads"));
   app.use(`${baseUrl}/categories`, categoryRouter);
